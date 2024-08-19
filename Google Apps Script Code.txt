@@ -1,0 +1,67 @@
+Google Sheets and Google Apps Script Project Information.
+
+Google Sheets Project Name      : datalogging
+Google Sheets ID                : 1wsHo8tJSuXkPpQCm9eUQbtPKXzwH8M54Jv2GI3PoGgI
+Sheet Name                      : makki
+
+Sensor Data Logger.
+
+Date|Time|Sensor Reading Status|Analog-1|Analog-2|Analog-3|Analog-4|Digital-1|Digital-2|Digital-3|Digital-4
+
+Google Apps Script Project Name : datalogger
+Web app URL       :https://script.google.com......           : 
+
+Web app URL Test Write : 
+
+
+Google Sheet Links: 
+
+
+Google Apps Script
+function doGet(e) { 
+  Logger.log(JSON.stringify(e));
+  var result = 'Ok';
+  
+  if (!e.parameter) {
+    result = 'No Parameters';
+  } else {
+    var sheet_id = '1wsHo8tJSuXkPpQCm9eUQbtPKXzwH8M54Jv2GI3PoGgI';  // Your Spreadsheet ID.
+    var sheet_name = "makki";  // Your Sheet Name.
+
+    var sheet_open = SpreadsheetApp.openById(sheet_id);
+    var sheet_target = sheet_open.getSheetByName(sheet_name);
+
+    var newRow = sheet_target.getLastRow() + 1;
+
+    var rowDataLog = [];
+
+    // Capture the current date and time
+    var Curr_Date = Utilities.formatDate(new Date(), "Asia/Jakarta", 'dd/MM/yyyy');
+    var Curr_Time = Utilities.formatDate(new Date(), "Asia/Jakarta", 'HH:mm:ss');
+    
+    rowDataLog[0] = Curr_Date;  // Date in column A
+    rowDataLog[1] = Curr_Time;  // Time in column B
+
+    // Fill the rowDataLog array with the corresponding sensor values from the ESP32
+    rowDataLog[2] = e.parameter.sts || '';      // Sensor Reading Status in column C
+    rowDataLog[3] = e.parameter.a1 || '';       // Analog-1 in column D
+    rowDataLog[4] = e.parameter.a2 || '';       // Analog-2 in column E
+    rowDataLog[5] = e.parameter.a3 || '';       // Analog-3 in column F
+    rowDataLog[6] = e.parameter.a4 || '';       // Analog-4 in column G
+    rowDataLog[7] = e.parameter.d1 || '';       // Digital-1 in column H
+    rowDataLog[8] = e.parameter.d2 || '';       // Digital-2 in column I
+    rowDataLog[9] = e.parameter.d3 || '';       // Digital-3 in column J
+    rowDataLog[10] = e.parameter.d4 || '';      // Digital-4 in column K
+    
+    // Write data to the sheet
+    Logger.log(JSON.stringify(rowDataLog));
+    var newRangeDataLog = sheet_target.getRange(newRow, 1, 1, rowDataLog.length);
+    newRangeDataLog.setValues([rowDataLog]);
+
+    return ContentService.createTextOutput(result);
+  }
+}
+
+function stripQuotes( value ) {
+  return value.replace(/^["']|['"]$/g, "");
+}
